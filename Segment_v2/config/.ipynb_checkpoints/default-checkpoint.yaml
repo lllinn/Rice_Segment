@@ -1,0 +1,65 @@
+# 训练配置
+experiment_name: Graduation/Segformer/mit_b2
+log_dir: ./logs
+checkpoint_dir: ./checkpoints
+epochs: 100
+batch_size: 8
+accumulate_steps: 8  # 梯度累积步数
+num_workers: 32
+lr: 2e-4
+weight_decay: 1e-4
+early_stop_patience: 20  # 容忍多少个epoch不提升后停止训练
+train_batch_ratio: 1.0 # 选取train dataset 一定比例的数据进行训练
+val_batch_ratio: 1.0   # 选取val dataset 一定比例的数据进行训练
+test_batch_ratio: 1.0  # 选取test dataset 一定比例的数据进行训练
+send_to_wandb: False  # 是否将训练过程发送到wandb
+send_to_email: True  # 是否将训练结果发送到邮箱
+random_seed: 42  # 设置随机种子，以便每次运行结果可复现
+mean: [0.485, 0.456, 0.406] # 自己数据集上的分布
+std: [0.229, 0.224, 0.225]
+loss_type: crossentropy_loss # 交叉熵损失函数  focal_loss, crossentropy_loss
+optimizer: AdamW
+scheduler: Warmup_CosineAnnealingLR
+T_Max: 100
+eta_min: 1e-5
+# 软标签配置（核心）
+soft_label: False  # 是否使用软标签
+soft_label_map:
+  5:  # 原始类别（轻度倒伏）
+    - [5, 0.6]
+    - [4, 0.1]
+    - [3, 0.2]
+ignore_index: None  # 忽略的类别索引
+
+# trainform_type: default  # 指定数据增强策略
+
+# 数据配置
+dataset_dir: /root/autodl-tmp/Graduation/abnormal-03.17-7-640-0.1-0.6-0.2-0.2-v5.4
+train_images_dir: images/train
+train_masks_dir: labels/train
+val_images_dir: images/val
+val_masks_dir: labels/val
+test_images_dir: images/test
+test_masks_dir: labels/test
+input_size: 640
+load_on_ram: False   # 是否将数据加载到RAM中，以加快训练速度
+# 预测配置
+checkpoint_path: /root/code/Segment/logs/Graduation/Segformer/mit_b4/version_1/checkpoints/best_model-epoch=70-val/IoU=0.7602673172950745-val/acc=0.9855611324310303.ckpt
+resume: False
+
+# 模型配置
+arch: segformer
+encoder: mit_b2
+pretrained: imagenet
+in_channels: 3
+num_classes: 8
+# class_names: [background, road, sugarcane, rice_normal, rice_severe]
+class_names: [background, road, sugarcane, rice_normal, rice_severe, rice_mild, weed, abnormal]
+IoU_index: [4,5,7] # TODO: 记得该代码，追踪的指标取平均rice severe rice_mild abnormal # 评价指标，Index对应class_names中的索引，用以计算评价指标
+# 硬件配置
+gpus: 1
+precision: 16  # 精度模式，Double precision (64), full precision (32), half precision (16) or bfloat16 precision (bf16). Can be used on CPU, GPU, TPUs, HPUs or IPUs. Default: ``32``.
+
+# 模型推理配置
+output_dir: E:\Code\RiceLodging\datasets\Merge_DJ\Meiju1\v4
+
