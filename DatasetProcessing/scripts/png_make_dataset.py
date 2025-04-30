@@ -238,7 +238,8 @@ def main(all_dataname: list, input_data_dir, input_data_end_with ,input_label_fo
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # all_dataname = ['20240912-Rice-M3M-50m-Lingtangkou\map', '20240911-Rice-M3M-50m-Meiju-1', '20240911-Rice-M3M-50m-Meiju-2/map', '20240913-Rice-M3M-50m-Xipo-1', '20240912-Rice-M3M-50m-Xipo-2']
-    parser.add_argument("--all_dataname", type=list, default=['20240911-Rice-M3M-50m-Meiju-1', '20240911-Rice-M3M-50m-Meiju-2/map', '20240912-Rice-M3M-50m-Lingtangkou\map'], help="all data name")
+    # parser.add_argument("--all_dataname", type=list, default=['20240911-Rice-M3M-50m-Meiju-1', '20240911-Rice-M3M-50m-Meiju-2/map', '20240912-Rice-M3M-50m-Lingtangkou\map'], help="all data name")
+    parser.add_argument("--all_dataname", type=list, default=['20240911-Rice-M3M-50m-Meiju-2/map'], help="all data name")
     # parser.add_argument("--all_dataname", type=list, default=['20240912-Rice-M3M-50m-Lingtangkou\map'], help="all data name")
     # parser.add_argument("--all_dataname", type=list, default=['20240911-Rice-M3M-50m-Meiju-2/map'], help="all data name")
     parser.add_argument("--input_data_dir", type=str, default=r"G:/Data/DJITerra_Export_Rice2024_UAV-RGB-MSI", help="input data dir")
@@ -247,8 +248,8 @@ if __name__ == "__main__":
     parser.add_argument("--label_end_with", type=str, default="Meiju1_2_Lingtangkou_v5.tif", help="label end with version")
     # parser.add_argument("--output_dir", type=str, default=r"E:\Code\RiceLodging\datasets\DJ\Meiju1_2_Lingtangkou", help="output dir")
     # parser.add_argument("--output_name", type=str, default="abnormal", help="output name")
-    parser.add_argument("--output_dir", type=str, default=r"E:/Code/RiceLodging/datasets/DJ/Meiju1_2_Lingtangkou_Label_Promote", help="output dir")
-    parser.add_argument("--output_name", type=str, default="Self-training", help="output name")
+    parser.add_argument("--output_dir", type=str, default=r"E:/Code/RiceLodging/datasets/DJ/Meiju2_YOLO_Test", help="output dir")
+    parser.add_argument("--output_name", type=str, default="YOLO", help="output name")
     # 一般不用改
     parser.add_argument("--crop_size", type=int, default=640, help="crop size")
     parser.add_argument("--repetition_rate", type=float, default=0.1, help="repetition rate")

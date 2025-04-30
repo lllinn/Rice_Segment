@@ -162,7 +162,7 @@ if __name__ == '__main__':
     # 1. Define dataset configurations (***UPDATED STRUCTURE with class_names in type_overrides***)
     dataset_configurations_example = {
         'RGB': {
-            'base_dir': '/root/code/Rice_Segment/DatasetProcessing/synthetic_dataset_rgb',
+            'base_dir': 'E:/Code/Sever/code/github/DatasetProcessing/synthetic_dataset_rgb',
             'in_channels': 3,
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE: {mask_type: {split: subdir, 'type_overrides': {...}}}
@@ -187,8 +187,8 @@ if __name__ == '__main__':
             # 'other_overrides': {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]},
         },
         'ALL': {
-            'base_dir': '/root/code/Rice_Segment/DatasetProcessing/synthetic_dataset_all',
-            'in_channels': 5, # Note: Previous example had 55 channels for ALL, double check this
+            'base_dir': 'E:/Code/Sever/code/github/DatasetProcessing/synthetic_dataset_all',
+            'in_channels': 55, # Note: Previous example had 55 channels for ALL, double check this
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE
                 'severity': {
@@ -211,7 +211,7 @@ if __name__ == '__main__':
              # 'other_overrides': {'mean': [...], 'std': [...]},
         },
         'CHM': {
-            'base_dir': '/root/code/Rice_Segment/DatasetProcessing/synthetic_dataset_chm',
+            'base_dir': 'E:/Code/Sever/code/github/DatasetProcessing/synthetic_dataset_chm',
             'in_channels': 1,
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE

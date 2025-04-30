@@ -11,7 +11,8 @@ import glob # Import glob to find files by pattern
 
 def create_synthetic_data(output_dir, num_files, height, width, features_num, label_configs, filename_prefix="synthetic"):
     """
-    创建虚拟的 .npy 数据文件和对应的多种 .png 标签文件。
+    创建带有空间模式的虚拟 .npy 数据文件和对应的多种 .png 标签文件。
+    标签文件是根据数据文件通过阈值派生出来的。
 
     Args:
         output_dir (str): 数据文件保存的目录。
@@ -32,52 +33,114 @@ def create_synthetic_data(output_dir, num_files, height, width, features_num, la
     os.makedirs(output_dir, exist_ok=True)
     print(f"输出目录: {os.path.abspath(output_dir)}")
     print(f"标签类型配置: {label_configs}")
-    print(f"开始生成 {num_files} 组虚拟数据...")
+    print(f"开始生成 {num_files} 组带有模式的虚拟数据...")
 
-    for i in tqdm(range(num_files), desc="Generating files...", unit="files", ncols=100):
-        # 使用零填充的索引，方便排序
+    # 使用 tqdm 显示进度条
+    for i in tqdm(range(num_files), desc="Generating files", unit="files"):
+        # 使用零填充的索引，方便排序和命名
         file_idx = f"{i:05d}" # 例如：00000, 00001, ...
         base_filename = f"{filename_prefix}_{file_idx}" # 文件基础名
 
-        # --- 生成 .npy 数据文件 ---
-        npy_data = np.random.rand(height, width, features_num).astype(np.float32)
+        # --- 生成带有模式的 .npy 数据文件 ---
+        # 创建一个基于像素坐标的简单模式，并随文件索引变化
+        npy_data = np.zeros((height, width, features_num), dtype=np.float32)
+        r_coords, c_coords = np.ogrid[0:height, 0:width] # 获取行和列的坐标网格
+
+        # 创建一个基础空间模式 (例如，对角线梯度)
+        # 归一化到 0-1 范围，并结合文件索引和特征索引增加变化
+        spatial_pattern = (r_coords / height + c_coords / width) # 基础空间模式 0 到 ~2
+
+        for feature in range(features_num):
+             # 每个特征通道的模式：基础空间模式 + 文件索引影响 + 特征索引影响
+             # 使用 sin 函数增加一些非线性变化，并缩放到一定范围
+             pattern_value = spatial_pattern + (i * 0.05) + (feature * 0.1)
+             npy_data[:, :, feature] = np.sin(pattern_value * np.pi * 2) * 50 + 100 + (i % 20) # 添加一些变化和偏移
+             # 可以根据需要调整缩放和偏移，确保数据分布适合生成标签
+
+
         npy_filename = f"{base_filename}.npy"
         npy_filepath = os.path.join(output_dir, npy_filename)
         np.save(npy_filepath, npy_data)
 
-        # --- 生成多种 .png 标签文件 ---
+        # --- 根据数据生成多种 .png 标签文件 ---
+        # 派生标签的基础数据 (例如，使用数据的第一个特征或平均值)
+        data_for_label_derivation = np.mean(npy_data, axis=-1) # 使用所有特征的平均值作为派生标签的基础
+
+
         for label_config in label_configs:
             label_name = label_config['name']
             num_classes = label_config['num_classes']
 
-            # 生成随机标签数据，范围从 0 到 num_classes - 1
-            # 使用 uint8 类型保存为 PNG 灰度图 (最多支持 256 类)
-            if num_classes > 256:
-                 print(f"警告: 标签类型 '{label_name}' 的类别数量 ({num_classes}) 超过 256，保存为 PNG 可能会丢失信息或失败。考虑使用其他格式或方法。", file=sys.stderr)
-                 # Fallback to uint16 or handle differently if needed
-                 label_data = np.random.randint(0, num_classes, size=(height, width), dtype=np.uint16) # Example: use uint16
-                 mode = 'I;16' # Example: use 16-bit grayscale mode for Pillow
+            # 生成标签数据，范围从 0 到 num_classes - 1
+            # 通过对派生数据应用阈值来创建标签
+            if num_classes <= 0:
+                 print(f"警告: 标签类型 '{label_name}' 的类别数量为 {num_classes}，跳过生成标签。", file=sys.stderr)
+                 continue
+            elif num_classes == 1:
+                 # 如果只有一类，所有像素都是 0
+                 label_data = np.zeros((height, width), dtype=np.uint8)
+                 mode = 'L'
             else:
-                 label_data = np.random.randint(0, num_classes, size=(height, width), dtype=np.uint8)
-                 mode = 'L' # 8-bit grayscale
+                # 创建 num_classes - 1 个阈值，将数据范围划分为 num_classes 个区间
+                # 这些阈值将根据当前派生数据的实际值范围来确定，以确保每个类别至少有可能出现
+                min_val = np.min(data_for_label_derivation)
+                max_val = np.max(data_for_label_derivation)
+
+                # 避免 min == max 导致 linspace 错误
+                if min_val == max_val:
+                    print(f"警告: 文件 {base_filename} 的派生数据 '{label_name}' 的 min/max 值相同 ({min_val})，无法生成多类别标签。将全部设为类别 0。", file=sys.stderr)
+                    label_data = np.zeros((height, width), dtype=np.uint8)
+                    mode = 'L'
+                else:
+                    # 创建 num_classes - 1 个均匀分布的阈值，用于 np.digitize 分类
+                    # thresholds 数组的长度是 num_classes - 1
+                    # np.digitize(x, bins) 会将 x 中的元素归入 bins 定义的区间。
+                    # 结果是 bins 的索引，范围从 0 到 len(bins)。
+                    # 例如：bins=[t1, t2, t3], t1<t2<t3
+                    # 值 < t1 -> 索引 0
+                    # t1 <= 值 < t2 -> 索引 1
+                    # t2 <= 值 < t3 -> 索引 2
+                    # 值 >= t3 -> 索引 3
+                    # 我们需要 num_classes-1 个阈值来得到 0 到 num_classes-1 的索引结果。
+                    # np.linspace(start, stop, num) 生成 num 个样本，包含 start 和 stop。
+                    # 我们需要 num_classes 个边界来定义 num_classes 个区间，所以 linspace 需要 num_classes+1 个点来定义边界，
+                    # 但 np.digitize 使用的是 区间右边界，所以我们只需要 num_classes 个点来定义 num_classes-1 个边界。
+                    # 最简单的是生成 num_classes+1 个点，然后取中间 num_classes-1 个作为阈值
+                    thresholds = np.linspace(min_val, max_val, num_classes + 1)[1:-1] # 移除 min 和 max
+
+                    # 使用 digitize 将数据值转换为类别索引 (0 到 num_classes - 1)
+                    label_data = np.digitize(data_for_label_derivation, thresholds)
+
+                    # 确保数据类型适合保存为 PNG 灰度图
+                    # PNG 灰度图 (L) 是 8-bit (0-255)
+                    # PNG 灰度图 (I;16) 是 16-bit (0-65535)
+                    if num_classes > 256:
+                        # 类别数超过 256，需要 16-bit 深度
+                        label_data = label_data.astype(np.uint16)
+                        mode = 'I;16' # Pillow mode for 16-bit grayscale
+                        # 警告用户，因为某些软件对 16-bit PNG 支持可能有限
+                        if i == 0: # 只在第一次生成时警告
+                             print(f"警告: 标签类型 '{label_name}' 的类别数量 ({num_classes}) > 256。标签将保存为 16-bit 灰度 PNG ('I;16' 模式)。", file=sys.stderr)
+                    else:
+                        # 类别数在 0-255 范围内，可以使用 8-bit
+                        label_data = label_data.astype(np.uint8)
+                        mode = 'L' # Pillow mode for 8-bit grayscale
 
             # 定义标签文件名，包含标签类型名
-            png_filename = f"{base_filename}_{label_name}.png" # 例如: synthetic_00001_severity.png
+            # 文件名格式：{prefix}_{index}_{label_name}.png
+            png_filename = f"{base_filename}_{label_name}.png"
             png_filepath = os.path.join(output_dir, png_filename)
 
             # 保存 .png 标签文件
             try:
+                # 如果 num_classes > 256 且 mode='I;16'，Pillow 可以处理
                 label_img = Image.fromarray(label_data, mode=mode)
                 label_img.save(png_filepath)
             except Exception as e:
-                print(f"错误: 保存标签文件 {png_filename} 时发生错误: {e}", file=sys.stderr)
+                 print(f"错误: 保存标签文件 {png_filepath} 时发生错误: {e}", file=sys.stderr)
 
 
-        # 可以在这里添加一些进度打印，tqdm 已经提供了外层进度条
-        # if (i + 1) % 100 == 0 or (i + 1) == num_files:
-        #     print(f"已生成 {i + 1}/{num_files} 组文件")
-
-    print("\n虚拟数据生成完成！")
+    print("\n带有模式的虚拟数据生成完成！")
 
 
 def split_dataset(input_dir, output_dir, train_ratio=0.6, val_ratio=0.2, test_ratio=0.2, seed=None, mode='copy', label_dest_subdir_map=None):
@@ -290,13 +353,13 @@ if __name__ == "__main__":
                         help="生成数据的图像高度 (默认为 640)")
     parser.add_argument("--width", type=int, default=640,
                         help="生成数据的图像宽度 (默认为 640)")
-    parser.add_argument("--num_features", type=int, default=5,
+    parser.add_argument("--num_features", type=int, default=1,
                         help=".npy 数据文件的特征数量 (默认为 1)")
     parser.add_argument("--prefix", type=str, default="synthetic",
                         help="文件名的前缀 (默认为 synthetic)")
 
     # --- Arguments for split_dataset ---
-    parser.add_argument("--output_dir", type=str, default="./synthetic_dataset_all",
+    parser.add_argument("--output_dir", type=str, default="./synthetic_dataset_chm",
                         help="最终拆分后数据集保存的根目录 (默认为 ./synthetic_dataset_split)")
     parser.add_argument("--train_ratio", type=float, default=0.6,
                         help="训练集占总数的比例 (默认为 0.6)")
