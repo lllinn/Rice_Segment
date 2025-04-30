@@ -89,3 +89,4 @@ class SegmentationTrainer:
         )
         # 使用训练器进行训练
         trainer.fit(model, *data_module)
+        return trainer

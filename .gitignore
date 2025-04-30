@@ -1,2 +1,7 @@
+Segment_v2/logs/*
+Segment_v2/experiment_results.csv
+DatasetProcessing/synthetic_dataset_all/*
+DatasetProcessing/synthetic_dataset_chm/*
+DatasetProcessing/synthetic_dataset_rgb/*
 DatasetProcessing/csv/*
 DatasetProcessing/logs/*
