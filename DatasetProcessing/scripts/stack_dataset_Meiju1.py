@@ -18,6 +18,7 @@ import json
 from calc_mean_std import calc_mean_and_std, visualize_feature
 import shutil
 from osgeo import gdal
+from PIL import Image
 
 def create_dataset_image(image_folder, output_folder, resolution, crop_size=640, repetition_rate=0.1, tif_shuffix = ".tif", shuffix=".npy", skip_log="conversion_skip.json"):
     # 先裁剪Tif(Image_Tif)和标签文件夹(Label_Tif)
@@ -170,12 +171,117 @@ def change_future_data(folder, band_index):
         print(band_data*(85-1)+1)
         exit()
 
+def process_label_images(input_folder, output_folder):
+    """
+    处理文件夹中的灰度 PNG 标签图像。
+
+    Args:
+        input_folder (str): 包含原始 PNG 标签图的文件夹路径。
+        output_folder (str): 保存处理后的 PNG 标签图的文件夹路径。
+    """
+    # 创建输出文件夹（如果不存在）
+    os.makedirs(output_folder, exist_ok=True)
+
+    # 遍历输入文件夹中的所有文件
+    for filename in tqdm(os.listdir(input_folder), unit="files", ncols=100):
+        if filename.lower().endswith('.png'):
+            input_path = os.path.join(input_folder, filename)
+            output_path = os.path.join(output_folder, filename)
+
+            try:
+                # 打开图像并确保是灰度图 (L模式)
+                img = Image.open(input_path).convert('L')
+                img_array = np.array(img)
+
+                # 检查像素值范围是否在 0-7 内 (可选，用于验证)
+                # if np.max(img_array) > 7 or np.min(img_array) < 0:
+                #     print(f"Warning: {filename} contains pixel values outside the expected 0-7 range.")
+
+                # 创建一个用于存放处理结果的新数组，初始化为原数组的副本
+                processed_array = img_array.copy()
+
+                # 规则 1: 将值为 0 的地方改为 255
+                processed_array[img_array == 0] = 255
+
+                # 规则 2: 将值为 1 到 7 的地方值减去 1
+                # 使用布尔索引选择需要修改的像素
+                mask_1_to_7 = (img_array >= 1) & (img_array <= 7)
+                processed_array[mask_1_to_7] = img_array[mask_1_to_7] - 1
+
+                # 将 NumPy 数组转换回 PIL 图像，并确保数据类型正确 (uint8)
+                processed_img = Image.fromarray(processed_array.astype(np.uint8))
+
+                # 保存处理后的图像
+                processed_img.save(output_path)
+                # print(f"Processed and saved {filename} to {output_folder}")
+
+            except Exception as e:
+                print(f"Error processing {filename}: {e}")
+
+def create_none_severity_label(input_folder, output_folder):
+    """
+    处理文件夹中的灰度 PNG 标签图像，应用第二个转换规则。
+
+    规则:
+    - 3 和 4 都变为 3
+    - 5 变为 4
+    - 6 变为 5
+
+    Args:
+        input_folder (str): 包含原始 PNG 标签图的文件夹路径。
+        output_folder (str): 保存处理后的 PNG 标签图的文件夹路径。
+    """
+    # 创建输出文件夹（如果不存在）
+    os.makedirs(output_folder, exist_ok=True)
+
+    print(f"Creating none severity label from '{input_folder}' to '{output_folder}'...")
+
+    # 遍历输入文件夹中的所有文件
+    for filename in tqdm(os.listdir(input_folder), unit="files", ncols=100):
+        if filename.lower().endswith('.png'):
+            input_path = os.path.join(input_folder, filename)
+            output_path = os.path.join(output_folder, filename)
+
+            try:
+                # 打开图像并确保是灰度图 (L模式)
+                img = Image.open(input_path).convert('L')
+                img_array = np.array(img)
+
+                # 创建一个用于存放处理结果的新数组，初始化为原数组的副本
+                processed_array = img_array.copy()
+
+                # 规则 1: 将值为 3 或 4 的地方都变为 3
+                processed_array[(img_array == 3) | (img_array == 4)] = 3
+
+                # 规则 2: 将值为 5 或 6 的地方值减去 1 (5->4, 6->5)
+                # 使用布尔索引选择需要修改的像素
+                mask_5_to_6 = (img_array >= 5) & (img_array <= 6)
+                processed_array[mask_5_to_6] = img_array[mask_5_to_6] - 1
+
+                # 将 NumPy 数组转换回 PIL 图像，并确保数据类型正确 (uint8)
+                # 注意：这里的像素值范围会是 0-6 (来自旧的 1-7 和新的 5-6) 以及 3 (来自旧的 3/4)
+                # 最终范围会是 0-6 加上可能存在的其他未修改的像素值
+                processed_img = Image.fromarray(processed_array.astype(np.uint8))
+
+                # 保存处理后的图像
+                processed_img.save(output_path)
+                # print(f"  Processed and saved {filename}")
+
+            except Exception as e:
+                print(f"  Error processing {filename}: {e}")
+        else:
+             print(f"  Skipping non-PNG file: {filename}")
+    print("Create none severity label complete.")
+
+
 if __name__ == '__main__':
 
     base_folder = r"F:/Rice2024/Meiju1/Split_Stretch"  # 数据源
     output_base_folder = r"D:/Rice2024/Meiju1/Datasets/Samples"  # 归一化后的数据集位置
     output_stack_folder = r"G:/Rice2024/Meiju1/Datasets/Stack_Norm_All"  # 最终归一化后的堆叠数据集位置
-    output_label_folder = r"F:/Rice2024/Meiju1/Labels-shp" # Labels 位置
+    output_label_folder = r"F:/Rice2024/Meiju1/Labels/Temp" # Labels 位置
+    output_label_severity = r"F:/Rice2024/Meiju1/Labels/Rice_Lodging_Severity"
+    ouptut_label_none_severity = r"F:/Rice2024/Meiju1/Labels/Rice_Lodging_None_Severity"
 
     black_val = 1e-34
     resolution = (84765, 70876)
@@ -344,9 +450,14 @@ if __name__ == '__main__':
         send_email(f'stack数据集制作完成, 用时:{datetime.now() - start_time}', "数据集制作完成..")  
 
     elif args.run == "label":
-        create_dataset_image(label_folder, output_label_folder, crop_size=640, repetition_rate=repetition_rate,
+        create_dataset_image(label_folder, output_label_folder, resolution=resolution,crop_size=640, repetition_rate=repetition_rate,
                              tif_shuffix=label_name, shuffix=".png", skip_log=skip_log)
         send_email(f"Label数据集合成, 用时: {datetime.now() - start_time}")
+
+    elif args.run == "label_severity":
+        # 生成区分和不区分倒伏程度的标签图片
+        process_label_images(output_label_folder, output_label_severity)
+        create_none_severity_label(output_label_severity, ouptut_label_none_severity)
 
     elif args.run == "calc_normlize": # 计算获取归一化信息
         for folder in input_folders:

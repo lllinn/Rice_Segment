@@ -5,3 +5,5 @@ DatasetProcessing/synthetic_dataset_chm/*
 DatasetProcessing/synthetic_dataset_rgb/*
 DatasetProcessing/csv/*
 DatasetProcessing/logs/*
+DatasetProcessing/scripts/__pycache__/*
+DatasetProcessing/Test/*

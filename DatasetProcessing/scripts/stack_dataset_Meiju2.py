@@ -17,6 +17,7 @@ from typing import Dict, List, Tuple
 import json
 from calc_mean_std import calc_mean_and_std
 import shutil
+from stack_dataset_Meiju1 import process_label_images, create_none_severity_label
 
 def create_dataset_image(image_folder, output_folder, resolution, crop_size=640, repetition_rate=0.1, tif_shuffix = ".tif", shuffix=".npy", skip_log="conversion_skip.json"):
     # 先裁剪Tif(Image_Tif)和标签文件夹(Label_Tif)
@@ -164,8 +165,10 @@ if __name__ == '__main__':
     base_folder = r"E:/Rice2024/Meiju2/Split_Stretch"  # 数据源
     output_base_folder = r"E:/Rice2024/Meiju2/Datasets/Samples"  # 归一化后的数据集位置
     output_stack_folder = r"E:/Rice2024/Meiju2/Datasets/Stack_Norm_All"  # 最终归一化后的堆叠数据集位置
-    output_label_folder = r"E:/Rice2024/Meiju2/Labels" # Labels 位置
-
+    output_label_folder = r"E:/Rice2024/Meiju2/Labels/Temp" # Labels 位置
+    output_label_severity = r"E:/Rice2024/Meiju2/Labels/Rice_Lodging_Severity"
+    ouptut_label_none_severity = r"E:/Rice2024/Meiju2/Labels/Rice_Lodging_None_Severity"
+    
     black_val = 1e-34
     resolution = (53863, 52618)
 
@@ -332,9 +335,14 @@ if __name__ == '__main__':
         send_email(f'stack数据集制作完成, 用时:{datetime.now() - start_time}', "数据集制作完成..")  
 
     elif args.run == "label":
-        create_dataset_image(label_folder, output_label_folder, crop_size=640, repetition_rate=repetition_rate,
+        create_dataset_image(label_folder, output_label_folder, resolution=resolution, crop_size=640, repetition_rate=repetition_rate,
                              tif_shuffix=label_name, shuffix=".png", skip_log=skip_log)
         send_email(f"Label数据集合成, 用时: {datetime.now() - start_time}")
+
+    elif args.run == "label_severity":
+        # 生成区分和不区分倒伏程度的标签图片
+        process_label_images(output_label_folder, output_label_severity)
+        create_none_severity_label(output_label_severity, ouptut_label_none_severity)
 
     elif args.run == "calc_normlize": # 计算获取归一化信息
         for folder in input_folders:
