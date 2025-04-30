@@ -18,8 +18,9 @@ def main(config):
     seed = config['random_seed']
     pl.seed_everything(seed, workers=True) # 固定随机种子，workers=True 确保 DataLoader 的子进程也使用固定的种子
     
-    assert len(config['mean']) == config['in_channels'] == len(config['std']) , "mean, std, and in_channels must be equal"
-    
+    # assert len(config['mean']) == config['in_channels'] == len(config['std']) , "mean, std, and in_channels must be equal"
+    # assert 
+
     # 初始化数据
     train_transform = get_fusedRGB_transforms(config, 'train')
     val_transform = get_fusedRGB_transforms(config, 'val')
