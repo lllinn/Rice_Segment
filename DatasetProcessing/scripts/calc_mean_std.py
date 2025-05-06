@@ -25,26 +25,26 @@ import re
 # r'C:\Windows\Fonts\simhei.ttf'  # 黑体
 # r'C:\Windows\Fonts\msyh.ttc'    # 微软雅黑 (注意是 .ttc)
 # r'C:\Windows\Fonts\simsun.ttc'  # 宋体 (注意是 .ttc)
-chinese_font_path = r'C:\Windows\Fonts\simhei.ttf' # <-- **请修改为你的字体文件路径**
+# chinese_font_path = r'C:\Windows\Fonts\simhei.ttf' # <-- **请修改为你的字体文件路径**
 
-# 创建 FontProperties 对象，直接指向字体文件
-font_properties = None
-if os.path.exists(chinese_font_path):
-    try:
-        font_properties = fm.FontProperties(fname=chinese_font_path)
-        print(f"成功加载指定字体文件: {chinese_font_path}")
-    except Exception as e:
-        print(f"加载字体文件时发生错误: {e}")
-        font_properties = None
-else:
-    print(f"警告: 指定的字体文件不存在！请检查路径: {chinese_font_path}")
-    print("将尝试使用 Matplotlib 默认字体或 RCParams 设置。")
-    # 如果字体文件不存在，可以尝试回退到 RCParams 设置，前提是前面已经设置过
-    # 注意：这里不再次设置 RCParams，假设你已经在脚本开头设置过
-    pass
+# # 创建 FontProperties 对象，直接指向字体文件
+# font_properties = None
+# if os.path.exists(chinese_font_path):
+#     try:
+#         font_properties = fm.FontProperties(fname=chinese_font_path)
+#         print(f"成功加载指定字体文件: {chinese_font_path}")
+#     except Exception as e:
+#         print(f"加载字体文件时发生错误: {e}")
+#         font_properties = None
+# else:
+#     print(f"警告: 指定的字体文件不存在！请检查路径: {chinese_font_path}")
+#     print("将尝试使用 Matplotlib 默认字体或 RCParams 设置。")
+#     # 如果字体文件不存在，可以尝试回退到 RCParams 设置，前提是前面已经设置过
+#     # 注意：这里不再次设置 RCParams，假设你已经在脚本开头设置过
+#     pass
 
-# 确保负号正确显示
-mpl.rcParams['axes.unicode_minus'] = False
+# # 确保负号正确显示
+# mpl.rcParams['axes.unicode_minus'] = False
 
 
 def calc_mean_and_std(filepath, label_path, calc_logs=None, ignore_value=1e-34, excel_output_path=None):

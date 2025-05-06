@@ -162,7 +162,7 @@ if __name__ == '__main__':
     # 1. Define dataset configurations (***UPDATED STRUCTURE with class_names in type_overrides***)
     dataset_configurations_example = {
         'RGB': {
-            'base_dir': 'E:/Code/Sever/code/github/DatasetProcessing/synthetic_dataset_rgb',
+            'base_dir': '/root/data_temp/RGB',
             'in_channels': 3,
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE: {mask_type: {split: subdir, 'type_overrides': {...}}}
@@ -187,7 +187,7 @@ if __name__ == '__main__':
             # 'other_overrides': {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]},
         },
         'ALL': {
-            'base_dir': 'E:/Code/Sever/code/github/DatasetProcessing/synthetic_dataset_all',
+            'base_dir': '/root/datasets/ALL',
             'in_channels': 55, # Note: Previous example had 55 channels for ALL, double check this
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE
@@ -211,7 +211,7 @@ if __name__ == '__main__':
              # 'other_overrides': {'mean': [...], 'std': [...]},
         },
         'CHM': {
-            'base_dir': 'E:/Code/Sever/code/github/DatasetProcessing/synthetic_dataset_chm',
+            'base_dir': '/root/data_temp/CHM',
             'in_channels': 1,
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE
@@ -239,8 +239,9 @@ if __name__ == '__main__':
 
     # 2. Define model architectures and their corresponding encoders
     model_arch_map_example = {
-        'unet': ['resnet18', 'resnet34'],
-        'segformer': ['mit_b0', 'mit_b1'],
+        'unet': ['resnet50'],
+        'segformer': ['mit_b3'],
+        "deeplabv3plus": ["resnet50"],
     }
 
     # 3. Define which specific combinations of (Dataset, Mask Type, Architecture, Encoder) you want to generate.
@@ -251,32 +252,38 @@ if __name__ == '__main__':
     experiments_to_generate_example = {
         'RGB': {
             'severity': { # For RGB dataset using 'severity' masks
-                'unet': ['resnet18'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b0'],     # Generate RGB/severity/segformer/mit_b0
+                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                "deeplabv3plus": ["resnet50"],
             },
             'none_severity': { # For RGB dataset using 'none_severity' masks
-                 'unet': ['resnet18'],
-                 'segformer': ['mit_b0'],
-            },
-        },
-        'ALL': { # For ALL dataset
-             'severity': {
-                 'unet': ['resnet18'],
-                 'segformer': ['mit_b0'],
-            },
-            'none_severity': {
-                 'unet': ['resnet18'],
-                 'segformer': ['mit_b0'],
+                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                "deeplabv3plus": ["resnet50"],
             },
         },
         'CHM': { # For CHM dataset
              'severity': {
-                 'unet': ['resnet18'],
-                 'segformer': ['mit_b0'],
+                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                "deeplabv3plus": ["resnet50"],
             },
             'none_severity': {
-                 'unet': ['resnet18'],
-                 'segformer': ['mit_b0'],
+                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                "deeplabv3plus": ["resnet50"],
+            },
+        },
+        'ALL': { # For ALL dataset
+             'severity': {
+                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                "deeplabv3plus": ["resnet50"],
+            },
+            'none_severity': {
+                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                "deeplabv3plus": ["resnet50"],
             },
         },
         # Add definitions for other datasets/mask types/models

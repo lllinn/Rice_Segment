@@ -1109,12 +1109,12 @@ def apply_split_record_with_transform_dual_labels(
 if __name__ == "__main__":
 
     # 请修改以下路径和比例为你自己的设置
-    input_directory = './Test' # 替换为你的包含 MeijuX 文件夹的根目录
-    output_directory = './Test/Dataset_None_GLCM' # 替换为你希望存放切分后数据集的目标目录
-    split_json = "./Test/record.json"
+    input_directory = '/root/datasets' # 替换为你的包含 MeijuX 文件夹的根目录
+    output_directory = '/root/datasets/ALL' # 替换为你希望存放切分后数据集的目标目录
+    split_json = "./Rice2024/record.json"
     record_stack_pattern_part = "Stack_ALL"
     current_stack_pattern_part = "Stack_None_GLCM"
-    input_base_name = "Stack_None_GLCM"
+    input_base_name = "Stack_ALL"
     label_none_sev_base = "label_none_severity"
     label_sev_base = "label_severity"
 
@@ -1140,12 +1140,12 @@ if __name__ == "__main__":
     # )
 
     # 运行函数, 首次运行
-    # split_and_rename_data_and_record_dual_labels(input_directory, output_directory, split_json, input_base_name=input_base_name,
-    #                                              label_none_severity_base_name=label_none_sev_base, label_severity_base_name=label_sev_base, 
-    #                                              train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio)
-    apply_split_record_with_transform_dual_labels(input_directory, output_directory, split_json, record_stack_pattern_part=record_stack_pattern_part,
-                                                  current_stack_pattern_part=current_stack_pattern_part, copy_files=False, input_base_name=input_base_name,
-                                                  label_none_severity_base_name=label_none_sev_base, label_severity_base_name=label_sev_base)
+    split_and_rename_data_and_record_dual_labels(input_directory, output_directory, split_json, input_base_name=input_base_name,
+                                                 label_none_severity_base_name=label_none_sev_base, label_severity_base_name=label_sev_base, 
+                                                 train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio)
+    # apply_split_record_with_transform_dual_labels(input_directory, output_directory, split_json, record_stack_pattern_part=record_stack_pattern_part,
+    #                                               current_stack_pattern_part=current_stack_pattern_part, copy_files=False, input_base_name=input_base_name,
+    #                                               label_none_severity_base_name=label_none_sev_base, label_severity_base_name=label_sev_base)
 
 
     # split_and_rename_data_and_record(input_directory, output_directory, split_json, input_base_name=input_base_name,  

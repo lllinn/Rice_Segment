@@ -492,6 +492,29 @@ if __name__ == '__main__':
         send_email(f"切分数据集, 用时: {datetime.now() - start_time}")
     
     elif args.run == "feature":   # 提取指定的特征到新文件夹上
+        output_stack_folder = r"/root/datasets/ALL/train"  # 最终归一化后的堆叠数据集位置
+        features_output_dir = r'/root/data_temp/CHM/train' # 特征提取输出文件夹通道
+        features_to_process = [r'8_CHM-1', ]
+        for dir, name, files in os.walk(output_stack_folder):
+            # print(dir, name)
+            if len(files):
+                print(dir)
+                print(os.path.join(features_output_dir, os.path.basename(dir)))
+                split_npy_files(dir, channel_mapping, 
+                                os.path.join(features_output_dir, os.path.basename(dir)), features_to_process)
+        output_stack_folder = r"/root/datasets/ALL/val"  # 最终归一化后的堆叠数据集位置
+        features_output_dir = r'/root/data_temp/CHM/val' # 特征提取输出文件夹通道
+        features_to_process = [r'8_CHM-1', ]
+        for dir, name, files in os.walk(output_stack_folder):
+            # print(dir, name)
+            if len(files):
+                print(dir)
+                print(os.path.join(features_output_dir, os.path.basename(dir)))
+                split_npy_files(dir, channel_mapping, 
+                                os.path.join(features_output_dir, os.path.basename(dir)), features_to_process)
+        output_stack_folder = r"/root/datasets/ALL/test"  # 最终归一化后的堆叠数据集位置
+        features_output_dir = r'/root/data_temp/CHM/test' # 特征提取输出文件夹通道
+        features_to_process = [r'8_CHM-1', ]
         for dir, name, files in os.walk(output_stack_folder):
             # print(dir, name)
             if len(files):

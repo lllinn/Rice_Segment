@@ -1,11 +1,16 @@
 # 训练配置
-experiment_name: DJ/Stack_All/Segformer/mit_b0
+experiment_name: RGB/severity/DeepLabV3Plus/resnet50
 log_dir: ./logs
 checkpoint_dir: ./checkpoints
-epochs: 2
+epochs: 100
 batch_size: 4
 accumulate_steps: 16  # 梯度累积步数
 num_workers: 8
+pin_memory: True
+# batch_size: 2
+# accumulate_steps: 32  # 梯度累积步数
+# num_workers: 0
+# pin_memory: True
 lr: 2e-4
 weight_decay: 1e-4
 early_stop_patience: 20  # 容忍多少个epoch不提升后停止训练
@@ -34,13 +39,13 @@ soft_label_map:
 ignore_index: 255  # 忽略的类别索引
 
 # 数据配置
-dataset_dir: /root/code/Rice_Segment/DatasetProcessing/synthetic_data
+dataset_dir: /root/data_temp/RGB
 train_images_dir: train/data
-train_masks_dir: train/label
+train_masks_dir: train/label_severity
 val_images_dir: val/data
-val_masks_dir: val/label
+val_masks_dir: val/label_severity
 test_images_dir: test/data
-test_masks_dir: test/label
+test_masks_dir: test/label_severity
 input_size: 640
 load_on_ram: False
 # 预测配置
@@ -48,10 +53,10 @@ checkpoint_path: /root/code/Rice_Segment/Segment_v2/logs/DJ/Stack_All/Segformer/
 resume: False
 
 # 模型配置
-arch: segformer
-encoder: mit_b0
+arch: DeepLabv3Plus
+encoder: resnet50
 pretrained: imagenet
-in_channels: 55
+in_channels: 3
 num_classes: 7
 class_names: [road, sugarcane, rice_normal, rice_severe, rice_mild, weed, abnormal]
 IoU_index: [3,4,6]  # 评价指标，Index对应class_names中的索引，用以计算评价指标

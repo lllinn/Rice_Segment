@@ -68,6 +68,7 @@ def run_training(config):
             num_workers=config['num_workers'],
             pin_memory=True,
             persistent_workers=True,
+            drop_last=True,   # 丢弃最后一个批次，防止数据集大小不是batch_size的整数倍
         )
 
         val_loader = DataLoader(

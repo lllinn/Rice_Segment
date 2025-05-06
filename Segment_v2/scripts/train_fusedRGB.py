@@ -50,7 +50,9 @@ def main(config):
         shuffle=True,
         num_workers=config['num_workers'],
         pin_memory=True, 
-        persistent_workers=True,
+        drop_last=True,
+        # persistent_workers=True,
+        # prefetch_factor=2,
     )
     
     val_loader = DataLoader(
@@ -59,7 +61,8 @@ def main(config):
         num_workers=config['num_workers'],
         shuffle=False,
         pin_memory=True, 
-        persistent_workers=True,
+        # persistent_workers=True,
+        # prefetch_factor=2,
     )
     
     # 初始化模型
@@ -68,7 +71,7 @@ def main(config):
         model = SegmentationModel.load_from_checkpoint(config['checkpoint_path'])
     else:
         model = SegmentationModel(config)
-    
+
     # 训练
     trainer = SegmentationTrainer(config)
     trainer.fit(model, [train_loader, val_loader])

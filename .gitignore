@@ -29,3 +29,16 @@ Segment_v2/src/__pycache__/__init__.cpython-39.pyc
 Segment_v2/src/core/__pycache__/__init__.cpython-39.pyc
 Segment_v2/src/core/__pycache__/predictor.cpython-39.pyc
 Segment_v2/src/core/__pycache__/trainer.cpython-39.pyc
+Segment_v2/scripts/__pycache__/auto_train.cpython-312.pyc
+Segment_v2/src/data/__pycache__/datasets.cpython-312.pyc
+Segment_v2/src/data/__pycache__/transforms.cpython-312.pyc
+DatasetProcessing/src/__pycache__/__init__.cpython-312.pyc
+DatasetProcessing/src/processing/__pycache__/__init__.cpython-312.pyc
+DatasetProcessing/src/processing/__pycache__/background_black.cpython-312.pyc
+DatasetProcessing/src/processing/__pycache__/convert.cpython-312.pyc
+DatasetProcessing/src/processing/__pycache__/crop.cpython-312.pyc
+DatasetProcessing/src/processing/__pycache__/split.cpython-312.pyc
+DatasetProcessing/src/processing/__pycache__/stack_data.cpython-312.pyc
+DatasetProcessing/src/utils/__pycache__/__init__.cpython-312.pyc
+DatasetProcessing/src/utils/__pycache__/email_utils.cpython-312.pyc
+DatasetProcessing/src/utils/__pycache__/file_io.cpython-312.pyc
