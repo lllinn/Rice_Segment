@@ -43,3 +43,9 @@ DatasetProcessing/src/utils/__pycache__/__init__.cpython-312.pyc
 DatasetProcessing/src/utils/__pycache__/email_utils.cpython-312.pyc
 DatasetProcessing/src/utils/__pycache__/file_io.cpython-312.pyc
 staged_changes.diff
+detectron2/*
+Mask2Former/*
+mmsegmentation/*
+Segment_v2/config/experiments.yaml
+Segment_v2/config/fusedRGB.yaml
+Segment_v2/scripts/generate_experiments_yaml.py
