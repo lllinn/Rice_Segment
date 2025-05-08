@@ -187,7 +187,7 @@ if __name__ == '__main__':
             # 'other_overrides': {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]},
         },
         'ALL': {
-            'base_dir': '/root/datasets/ALL',
+            'base_dir': 'E:/ALL_Datasets/ALL',
             'in_channels': 55, # Note: Previous example had 55 channels for ALL, double check this
             'image_subdirs': {'train': 'train/data', 'val': 'val/data', 'test': 'test/data'},
             'mask_subdirs': { # <--- UPDATED STRUCTURE
@@ -250,30 +250,30 @@ if __name__ == '__main__':
     # Use `[]` or `None` for the encoder_names_list to include all encoders defined in `model_arch_map_example` for that architecture.
     # Omit a key (dataset, mask_type, arch) to exclude that specific combination subtree.
     experiments_to_generate_example = {
-        'RGB': {
-            'severity': { # For RGB dataset using 'severity' masks
-                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
-                "deeplabv3plus": ["resnet50"],
-            },
-            'none_severity': { # For RGB dataset using 'none_severity' masks
-                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
-                "deeplabv3plus": ["resnet50"],
-            },
-        },
-        'CHM': { # For CHM dataset
-             'severity': {
-                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
-                "deeplabv3plus": ["resnet50"],
-            },
-            'none_severity': {
-                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
-                "deeplabv3plus": ["resnet50"],
-            },
-        },
+        # 'RGB': {
+        #     'severity': { # For RGB dataset using 'severity' masks
+        #         'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+        #         'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+        #         "deeplabv3plus": ["resnet50"],
+        #     },
+        #     'none_severity': { # For RGB dataset using 'none_severity' masks
+        #         'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+        #         'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+        #         "deeplabv3plus": ["resnet50"],
+        #     },
+        # },
+        # 'CHM': { # For CHM dataset
+        #      'severity': {
+        #         'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+        #         'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+        #         "deeplabv3plus": ["resnet50"],
+        #     },
+        #     'none_severity': {
+        #         'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+        #         'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+        #         "deeplabv3plus": ["resnet50"],
+        #     },
+        # },
         'ALL': { # For ALL dataset
              'severity': {
                 'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18

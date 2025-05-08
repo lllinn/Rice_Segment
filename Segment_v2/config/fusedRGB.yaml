@@ -1,10 +1,10 @@
 # 训练配置
-experiment_name: RGB/severity/DeepLabV3Plus/resnet50
+experiment_name: ALL/severity/DeepLabV3Plus/resnet50
 log_dir: ./logs
 checkpoint_dir: ./checkpoints
 epochs: 100
-batch_size: 4
-accumulate_steps: 16  # 梯度累积步数
+batch_size: 8
+accumulate_steps: 8  # 梯度累积步数
 num_workers: 8
 pin_memory: True
 # batch_size: 2
@@ -39,7 +39,7 @@ soft_label_map:
 ignore_index: 255  # 忽略的类别索引
 
 # 数据配置
-dataset_dir: /root/data_temp/RGB
+dataset_dir: E:/ALL_Datasets/ALL
 train_images_dir: train/data
 train_masks_dir: train/label_severity
 val_images_dir: val/data

@@ -1,57 +1,13 @@
 base_config: ./config/fusedRGB.yaml
 results_csv: experiment_results.csv
 experiments:
-# - name: RGB/severity/unet/resnet50
-#   dataset_name: RGB_severity
-#   overrides:
-#     arch: unet
-#     encoder: resnet50
-#     dataset_dir: /root/data_temp/RGB
-#     in_channels: 3
-#     num_classes: 7
-#     IoU_index: &id001
-#     - 3
-#     - 4
-#     - 6
-#     class_names: &id002
-#     - road
-#     - sugarcane
-#     - rice_normal
-#     - rice_severe
-#     - rice_mild
-#     - weed
-#     - abnormal
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_severity
-#     experiment_name: RGB/severity/unet/resnet50
-# - name: RGB/severity/segformer/mit_b3
-#   dataset_name: RGB_severity
-#   overrides:
-#     arch: segformer
-#     encoder: mit_b3
-#     dataset_dir: /root/data_temp/RGB
-#     in_channels: 3
-#     num_classes: 7
-#     IoU_index: *id001
-#     class_names: *id002
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_severity
-#     experiment_name: RGB/severity/segformer/mit_b3
-- name: RGB/severity/DeepLabV3Plus/resnet50
-  dataset_name: RGB_severity
+- name: ALL/severity/unet/resnet50
+  dataset_name: ALL_severity
   overrides:
-    arch: DeepLabV3Plus
+    arch: unet
     encoder: resnet50
-    dataset_dir: /root/data_temp/RGB
-    in_channels: 3
+    dataset_dir: E:/ALL_Datasets/ALL
+    in_channels: 55
     num_classes: 7
     IoU_index: &id001
     - 3
@@ -71,249 +27,17 @@ experiments:
     val_masks_dir: val/label_severity
     test_images_dir: test/data
     test_masks_dir: test/label_severity
-    experiment_name: RGB/severity/DeepLabV3Plus/resnet50
-# - name: RGB/none_severity/unet/resnet50
-#   dataset_name: RGB_none_severity
-#   overrides:
-#     arch: unet
-#     encoder: resnet50
-#     dataset_dir: /root/data_temp/RGB
-#     in_channels: 3
-#     num_classes: 6
-#     IoU_index: &id003
-#     - 3
-#     - 5
-#     class_names: &id004
-#     - road
-#     - sugarcane
-#     - rice_normal
-#     - rice_lodging
-#     - weed
-#     - abnormal
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_none_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_none_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_none_severity
-#     experiment_name: RGB/none_severity/unet/resnet50
-# - name: RGB/none_severity/segformer/mit_b3
-#   dataset_name: RGB_none_severity
-#   overrides:
-#     arch: segformer
-#     encoder: mit_b3
-#     dataset_dir: /root/data_temp/RGB
-#     in_channels: 3
-#     num_classes: 6
-#     IoU_index: *id003
-#     class_names: *id004
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_none_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_none_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_none_severity
-#     experiment_name: RGB/none_severity/segformer/mit_b3
-- name: RGB/none_severity/DeepLabV3Plus/resnet50
-  dataset_name: RGB_none_severity
-  overrides:
-    arch: DeepLabV3Plus
-    encoder: resnet50
-    dataset_dir: /root/data_temp/RGB
-    in_channels: 3
-    num_classes: 6
-    IoU_index: &id003
-    - 3
-    - 5
-    class_names: &id004
-    - road
-    - sugarcane
-    - rice_normal
-    - rice_lodging
-    - weed
-    - abnormal
-    train_images_dir: train/data
-    train_masks_dir: train/label_none_severity
-    val_images_dir: val/data
-    val_masks_dir: val/label_none_severity
-    test_images_dir: test/data
-    test_masks_dir: test/label_none_severity
-    experiment_name: RGB/none_severity/DeepLabV3Plus/resnet50
-# - name: CHM/severity/unet/resnet50
-#   dataset_name: CHM_severity
-#   overrides:
-#     arch: unet
-#     encoder: resnet50
-#     dataset_dir: /root/data_temp/CHM
-#     in_channels: 1
-#     num_classes: 7
-#     IoU_index: &id005
-#     - 3
-#     - 4
-#     - 6
-#     class_names: &id006
-#     - road
-#     - sugarcane
-#     - rice_normal
-#     - rice_severe
-#     - rice_mild
-#     - weed
-#     - abnormal
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_severity
-#     experiment_name: CHM/severity/unet/resnet50
-# - name: CHM/severity/segformer/mit_b3
-#   dataset_name: CHM_severity
-#   overrides:
-#     arch: segformer
-#     encoder: mit_b3
-#     dataset_dir: /root/data_temp/CHM
-#     in_channels: 1
-#     num_classes: 7
-#     IoU_index: *id005
-#     class_names: *id006
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_severity
-#     experiment_name: CHM/severity/segformer/mit_b3
-- name: CHM/severity/DeepLabV3Plus/resnet50
-  dataset_name: CHM_severity
-  overrides:
-    arch: DeepLabV3Plus
-    encoder: resnet50
-    dataset_dir: /root/data_temp/CHM
-    in_channels: 1
-    num_classes: 7
-    IoU_index: &id005
-    - 3
-    - 4
-    - 6
-    class_names: &id006
-    - road
-    - sugarcane
-    - rice_normal
-    - rice_severe
-    - rice_mild
-    - weed
-    - abnormal
-    train_images_dir: train/data
-    train_masks_dir: train/label_severity
-    val_images_dir: val/data
-    val_masks_dir: val/label_severity
-    test_images_dir: test/data
-    test_masks_dir: test/label_severity
-    experiment_name: CHM/severity/DeepLabV3Plus/resnet50
-# - name: CHM/none_severity/unet/resnet50
-#   dataset_name: CHM_none_severity
-#   overrides:
-#     arch: unet
-#     encoder: resnet50
-#     dataset_dir: /root/data_temp/CHM
-#     in_channels: 1
-#     num_classes: 6
-#     IoU_index: &id007
-#     - 3
-#     - 5
-#     class_names: &id008
-#     - road
-#     - sugarcane
-#     - rice_normal
-#     - rice_lodging
-#     - weed
-#     - abnormal
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_none_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_none_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_none_severity
-#     experiment_name: CHM/none_severity/unet/resnet50
-# - name: CHM/none_severity/segformer/mit_b3
-#   dataset_name: CHM_none_severity
-#   overrides:
-#     arch: segformer
-#     encoder: mit_b3
-#     dataset_dir: /root/data_temp/CHM
-#     in_channels: 1
-#     num_classes: 6
-#     IoU_index: *id007
-#     class_names: *id008
-#     train_images_dir: train/data
-#     train_masks_dir: train/label_none_severity
-#     val_images_dir: val/data
-#     val_masks_dir: val/label_none_severity
-#     test_images_dir: test/data
-#     test_masks_dir: test/label_none_severity
-#     experiment_name: CHM/none_severity/segformer/mit_b3
-- name: CHM/none_severity/DeepLabV3Plus/resnet50
-  dataset_name: CHM_none_severity
-  overrides:
-    arch: DeepLabV3Plus
-    encoder: resnet50
-    dataset_dir: /root/data_temp/CHM
-    in_channels: 1
-    num_classes: 6
-    IoU_index: &id007
-    - 3
-    - 5
-    class_names: &id008
-    - road
-    - sugarcane
-    - rice_normal
-    - rice_lodging
-    - weed
-    - abnormal
-    train_images_dir: train/data
-    train_masks_dir: train/label_none_severity
-    val_images_dir: val/data
-    val_masks_dir: val/label_none_severity
-    test_images_dir: test/data
-    test_masks_dir: test/label_none_severity
-    experiment_name: CHM/none_severity/DeepLabV3Plus/resnet50
-- name: ALL/severity/unet/resnet50
-  dataset_name: ALL_severity
-  overrides:
-    arch: unet
-    encoder: resnet50
-    dataset_dir: /root/datasets/ALL
-    in_channels: 55
-    num_classes: 7
-    IoU_index: &id009
-    - 3
-    - 4
-    - 6
-    class_names: &id010
-    - road
-    - sugarcane
-    - rice_normal
-    - rice_severe
-    - rice_mild
-    - weed
-    - abnormal
-    train_images_dir: train/data
-    train_masks_dir: train/label_severity
-    val_images_dir: val/data
-    val_masks_dir: val/label_severity
-    test_images_dir: test/data
-    test_masks_dir: test/label_severity
     experiment_name: ALL/severity/unet/resnet50
 - name: ALL/severity/segformer/mit_b3
   dataset_name: ALL_severity
   overrides:
     arch: segformer
     encoder: mit_b3
-    dataset_dir: /root/datasets/ALL
+    dataset_dir: E:/ALL_Datasets/ALL
     in_channels: 55
     num_classes: 7
-    IoU_index: *id009
-    class_names: *id010
+    IoU_index: *id001
+    class_names: *id002
     train_images_dir: train/data
     train_masks_dir: train/label_severity
     val_images_dir: val/data
@@ -321,35 +45,35 @@ experiments:
     test_images_dir: test/data
     test_masks_dir: test/label_severity
     experiment_name: ALL/severity/segformer/mit_b3
-- name: ALL/severity/DeepLabV3Plus/resnet50
+- name: ALL/severity/deeplabv3plus/resnet50
   dataset_name: ALL_severity
   overrides:
-    arch: DeepLabV3Plus
+    arch: deeplabv3plus
     encoder: resnet50
-    dataset_dir: /root/datasets/ALL
+    dataset_dir: E:/ALL_Datasets/ALL
     in_channels: 55
     num_classes: 7
-    IoU_index: *id009
-    class_names: *id010
+    IoU_index: *id001
+    class_names: *id002
     train_images_dir: train/data
     train_masks_dir: train/label_severity
     val_images_dir: val/data
     val_masks_dir: val/label_severity
     test_images_dir: test/data
     test_masks_dir: test/label_severity
-    experiment_name: ALL/severity/DeepLabV3Plus/resnet50
+    experiment_name: ALL/severity/deeplabv3plus/resnet50
 - name: ALL/none_severity/unet/resnet50
   dataset_name: ALL_none_severity
   overrides:
     arch: unet
     encoder: resnet50
-    dataset_dir: /root/datasets/ALL
+    dataset_dir: E:/ALL_Datasets/ALL
     in_channels: 55
     num_classes: 6
-    IoU_index: &id011
+    IoU_index: &id003
     - 3
     - 5
-    class_names: &id012
+    class_names: &id004
     - road
     - sugarcane
     - rice_normal
@@ -368,11 +92,11 @@ experiments:
   overrides:
     arch: segformer
     encoder: mit_b3
-    dataset_dir: /root/datasets/ALL
+    dataset_dir: E:/ALL_Datasets/ALL
     in_channels: 55
     num_classes: 6
-    IoU_index: *id011
-    class_names: *id012
+    IoU_index: *id003
+    class_names: *id004
     train_images_dir: train/data
     train_masks_dir: train/label_none_severity
     val_images_dir: val/data
@@ -380,20 +104,20 @@ experiments:
     test_images_dir: test/data
     test_masks_dir: test/label_none_severity
     experiment_name: ALL/none_severity/segformer/mit_b3
-- name: ALL/none_severity/DeepLabV3Plus/resnet50
+- name: ALL/none_severity/deeplabv3plus/resnet50
   dataset_name: ALL_none_severity
   overrides:
-    arch: DeepLabV3Plus
+    arch: deeplabv3plus
     encoder: resnet50
-    dataset_dir: /root/datasets/ALL
+    dataset_dir: E:/ALL_Datasets/ALL
     in_channels: 55
     num_classes: 6
-    IoU_index: *id011
-    class_names: *id012
+    IoU_index: *id003
+    class_names: *id004
     train_images_dir: train/data
     train_masks_dir: train/label_none_severity
     val_images_dir: val/data
     val_masks_dir: val/label_none_severity
     test_images_dir: test/data
     test_masks_dir: test/label_none_severity
-    experiment_name: ALL/none_severity/DeepLabV3Plus/resnet50
+    experiment_name: ALL/none_severity/deeplabv3plus/resnet50
