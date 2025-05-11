@@ -275,14 +275,14 @@ if __name__ == '__main__':
         #     },
         # },
         'ALL': { # For ALL dataset
-             'severity': {
-                'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
-                "deeplabv3plus": ["resnet50"],
-            },
+            #  'severity': {
+            #     # 'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
+            #     'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+            #     "deeplabv3plus": ["resnet50"],
+            # },
             'none_severity': {
                 'unet': ['resnet50'],        # Generate RGB/severity/unet/resnet18
-                'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
+                # 'segformer': ['mit_b3'],     # Generate RGB/severity/segformer/mit_b0
                 "deeplabv3plus": ["resnet50"],
             },
         },

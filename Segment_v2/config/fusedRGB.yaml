@@ -49,7 +49,7 @@ test_masks_dir: test/label_severity
 input_size: 640
 load_on_ram: False
 # 预测配置
-checkpoint_path: /root/code/Rice_Segment/Segment_v2/logs/DJ/Stack_All/Segformer/mit_b0/version_7/checkpoints/best_model-epoch=0-val/IoU=0.0-val/acc=0.14299194514751434.ckpt
+checkpoint_path: E:\Code\Sever\code\github\Segment_v2\logs\ALL_severity_deeplabv3plus_resnet50\version_2\checkpoints\best_model-epoch=35-val\IoU=0.7616536617279053-val\acc=0.976622462272644.ckpt
 resume: False
 
 # 模型配置
