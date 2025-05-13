@@ -5,11 +5,11 @@ import concurrent.futures
 import time # 导入 time 模块用于计时
 
 # 定义基础文件夹和数据集子文件夹
-base_folers = ["E:/ALL_Datasets/ALL"]
+base_folers = ["/data/Rice2024/ALL"]
 datasets_folders = ["train/data", "val/data", "test/data"]
 
 # 定义要查找和替换的值
-ignore_value = -3.4028235e+38 # 要忽略的特定浮点值
+ignore_value = np.float32(-3.4028235e+38)
 new_value = 1e-34 # 替换成的新值
 
 # 定义一个函数，用于处理单个文件
@@ -114,11 +114,11 @@ print(f"\n=== 所有文件夹处理完成。总耗时: {total_end_time - total_s
 # import os
 # from tqdm import tqdm
 
-# base_folers = ["E:/ALL_Datasets/ALL"]
+# base_folers = ["/data/Rice2024/ALL"]
 
 # datasets_folders = ["train/data", "val/data", "test/data"]
 
-# ignore_value = -3.4028235e+38
+# ignore_value = np.float32(-3.4028235e+38)
 # new_value = 1e-34
 
 
@@ -128,11 +128,20 @@ print(f"\n=== 所有文件夹处理完成。总耗时: {total_end_time - total_s
 #         files = os.listdir(folder_path)
 #         print(folder_path)
 #         for file in tqdm(files, desc="Processing", unit="files", ncols=100):
-#             file_path = os.path.join(folder_path, file)
-#             data = np.load(file_path, mmap_mode='c')
-#             ignore_mask = data == ignore_value
-#             data[ignore_mask] = new_value
-#             np.save(file_path, data)
+#             if file.endswith(".npy"):
+#                 file_path = os.path.join(folder_path, file)
+#                 # size_bytes = os.path.getsize(file_path)
+#                 # if size_bytes != 90112128:
+#                 #     print(file_path)
+#                 #     print(f"File size: {size_bytes} bytes")
+#                 data = np.load(file_path)
+#                 # print(file_path, data.max(), data.min(), data.mean(), data.std())
+#                 # print(data.shape)
+#                 ignore_mask = data == ignore_value
+#                 if ignore_mask.any():
+#                     data[ignore_mask] = new_value
+#                     # np.save(file_path, data)
+#                     print("Done")
 
 # base_folers = ["/root/data_temp/CHM"]
 

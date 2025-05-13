@@ -1109,11 +1109,11 @@ def apply_split_record_with_transform_dual_labels(
 if __name__ == "__main__":
 
     # 请修改以下路径和比例为你自己的设置
-    input_directory = '/root/datasets' # 替换为你的包含 MeijuX 文件夹的根目录
-    output_directory = '/root/datasets/ALL' # 替换为你希望存放切分后数据集的目标目录
+    input_directory = '/data/Rice2024/ALL' # 替换为你的包含 MeijuX 文件夹的根目录
+    output_directory = '/data/Rice2024/ALL' # 替换为你希望存放切分后数据集的目标目录
     split_json = "./Rice2024/record.json"
     record_stack_pattern_part = "Stack_ALL"
-    current_stack_pattern_part = "Stack_None_GLCM"
+    current_stack_pattern_part = "Stack_ALL"
     input_base_name = "Stack_ALL"
     label_none_sev_base = "label_none_severity"
     label_sev_base = "label_severity"

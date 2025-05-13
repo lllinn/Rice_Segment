@@ -2,7 +2,7 @@ import sys
 sys.path.append('./')
 from src.processing.convert import tif_to_npy_folder
 from src.processing.background_black import smart_image_converter
-from src.processing.stack_data import stack_npy_files, split_npy_files
+from src.processing.stack_data import stack_npy_files, split_npy_files_threaded
 from src.processing.crop import crop_with_repetition, crop_with_repetition_and_convert_delete, crop_with_repetition_and_save_skip_log
 from src.utils.email_utils import send_email
 from src.utils.file_io import remove_folder, rename_files
@@ -19,6 +19,7 @@ from calc_mean_std import calc_mean_and_std, visualize_feature
 import shutil
 from osgeo import gdal
 from PIL import Image
+import concurrent.futures # 导入并发处理模块
 
 def create_dataset_image(image_folder, output_folder, resolution, crop_size=640, repetition_rate=0.1, tif_shuffix = ".tif", shuffix=".npy", skip_log="conversion_skip.json"):
     # 先裁剪Tif(Image_Tif)和标签文件夹(Label_Tif)
@@ -360,12 +361,12 @@ if __name__ == '__main__':
     features_output_dir = r'D:/Rice2024/Meiju1/Datasets/Stack_Norm_RGB-CIs -VIs-CHM' # 特征提取输出文件夹通道
 
     input_folders = [] # 输入文件夹，每个特征对应一个
-    for i, folder in enumerate(input_folders_name):
-        input_folders.append(os.path.join(base_folder, folder))
+    # for i, folder in enumerate(input_folders_name):
+    #     input_folders.append(os.path.join(base_folder, folder))
     output_folders = [] # 输出文件夹，每个特征对应一个
-    for i, folder in enumerate(input_folders_name):
-        output_folders.append(os.path.join(output_base_folder, folder))
-        os.makedirs(output_folders[i], exist_ok=True)
+    # for i, folder in enumerate(input_folders_name):
+    #     output_folders.append(os.path.join(output_base_folder, folder))
+    #     os.makedirs(output_folders[i], exist_ok=True)
 
     # 标签存放位置
     label_folder = r"F:/Rice2024/Meiju1/Labels-shp" # TODO: 还没确定好
@@ -492,39 +493,66 @@ if __name__ == '__main__':
         send_email(f"切分数据集, 用时: {datetime.now() - start_time}")
     
     elif args.run == "feature":   # 提取指定的特征到新文件夹上
-        output_stack_folder = r"/root/datasets/ALL/train"  # 最终归一化后的堆叠数据集位置
-        features_output_dir = r'/root/data_temp/CHM/train' # 特征提取输出文件夹通道
-        features_to_process = [r'8_CHM-1', ]
-        for dir, name, files in os.walk(output_stack_folder):
-            # print(dir, name)
-            if len(files):
-                print(dir)
-                print(os.path.join(features_output_dir, os.path.basename(dir)))
-                split_npy_files(dir, channel_mapping, 
-                                os.path.join(features_output_dir, os.path.basename(dir)), features_to_process)
-        output_stack_folder = r"/root/datasets/ALL/val"  # 最终归一化后的堆叠数据集位置
-        features_output_dir = r'/root/data_temp/CHM/val' # 特征提取输出文件夹通道
-        features_to_process = [r'8_CHM-1', ]
-        for dir, name, files in os.walk(output_stack_folder):
-            # print(dir, name)
-            if len(files):
-                print(dir)
-                print(os.path.join(features_output_dir, os.path.basename(dir)))
-                split_npy_files(dir, channel_mapping, 
-                                os.path.join(features_output_dir, os.path.basename(dir)), features_to_process)
-        output_stack_folder = r"/root/datasets/ALL/test"  # 最终归一化后的堆叠数据集位置
-        features_output_dir = r'/root/data_temp/CHM/test' # 特征提取输出文件夹通道
-        features_to_process = [r'8_CHM-1', ]
-        for dir, name, files in os.walk(output_stack_folder):
-            # print(dir, name)
-            if len(files):
-                print(dir)
-                print(os.path.join(features_output_dir, os.path.basename(dir)))
-                split_npy_files(dir, channel_mapping, 
-                                os.path.join(features_output_dir, os.path.basename(dir)), features_to_process)
-            # if not files:
-            #     continue
-        # split_npy_files(output_stack_folder, channel_mapping, features_output_dir, features_to_process)
+        # Define the base input directory to walk through
+        base_input_folder = r"/data/Rice2024/ALL"
+        # Define the base output directory for the extracted features
+        base_output_folder = r'/data/Rice2024/RGB_Color_Spectra_Texture'
+
+        # Define the features to process (same for all data subdirectories)
+        features_to_process = [
+            r'1_RGB-3',
+            r'2_CIs-10\B4-B7',
+            r'2_CIs-10\B8-B11',
+            r'2_CIs-10\B12-B13',
+            r'3_MSI-4',
+            r'4_VIs-13\B18-B21',
+            r'4_VIs-13\B22-B25',
+            r'4_VIs-13\B26-B28',
+            r'4_VIs-13\B29-B30',
+            r'5_R-GLCM-8\B31-B34',
+            r'5_R-GLCM-8\B35-B38',
+            r'6_G-GLCM-8\B39-B42',
+            r'6_G-GLCM-8\B43-B46',
+            r'7_B-GLCM-8\B47-B50',
+            r'7_B-GLCM-8\B51-B54',
+            # r"8_CHM-1"
+            ]
+
+        print(f"--- Starting feature extraction across {base_input_folder} ---")
+        print(f"Saving extracted features to base directory: {base_output_folder}")
+
+
+        MAX_WORKERS = 24
+        # Walk through all subdirectories starting from the base input folder
+        # os.walk yields tuples (dirpath, dirnames, filenames)
+        # dirpath is the current directory being walked (e.g., /root/datasets/ALL/train/scene1)
+        # dirnames is a list of names of the subdirectories in dirpath
+        # filenames is a list of names of the files in dirpath
+        for dirpath, dirnames, filenames in os.walk(base_input_folder):
+            # We are only interested in directories that actually contain files (data subdirectories)
+            # This check prevents processing parent directories like /root/datasets/ALL/train or /root/datasets/ALL
+            # unless they also happen to directly contain data files, which is less typical
+            if filenames:
+                print(f"\nProcessing data directory: {dirpath}")
+
+                # Calculate the path of the current data directory relative to the base input folder
+                # e.g., if dirpath is /root/datasets/ALL/train/scene1, relative_path will be train/scene1
+                relative_path = os.path.relpath(dirpath, base_input_folder)
+
+                # Construct the corresponding output subdirectory path by joining the base output folder
+                # with the relative path.
+                # e.g., os.path.join(/root/data_temp/CHM, train/scene1) -> /root/data_temp/CHM/train/scene1
+                output_subdir = os.path.join(base_output_folder, relative_path)
+                print(f"Saving features to: {output_subdir}")
+                
+                # Ensure the output directory structure exists before trying to save files into it
+                # exist_ok=True prevents errors if the directory already exists
+                os.makedirs(output_subdir, exist_ok=True)
+
+                # # Call the function to split/extract features
+                # # It takes the input directory (dirpath), channel mapping, output directory, and features list
+                split_npy_files_threaded(dirpath, channel_mapping,
+                                output_subdir, features_to_process, max_threads=MAX_WORKERS)
 
     elif args.run == "change_future":
         change_future_data(output_stack_folder, 10)
@@ -545,6 +573,33 @@ if __name__ == '__main__':
                     visualize_feature(file_path, label_path, ignore_value, band_index, output_folder)
                 print(f"run one feature time is {datetime.now() - start_time}")
 
+
+    elif args.run == "check":
+        # Define the base input directory to walk through
+        base_input_folder = r"/data/Rice2024/ALL"
+        # Define the base output directory for the extracted features
+        base_output_folder = r'/data/Rice2024/RGB_Color_Spectra_Texture'
+
+        check_folder = "train/data"
+
+        input_folder = os.path.join(base_input_folder, check_folder)
+        output_folder = os.path.join(base_output_folder, check_folder)
+
+        check_channels = list(range(0, 54))
+        print("channels number is", len(set(check_channels)))
+        print(check_channels)
+        for i, file in enumerate(os.listdir(input_folder)):
+            all_file_path = os.path.join(input_folder, file)
+            check_file_path = os.path.join(output_folder, file)
+            all_file_data = np.load(all_file_path, mmap_mode='c')
+            check_file_data = np.load(check_file_path, mmap_mode='c')
+            print(i, all_file_data[:,:,check_channels].shape, check_file_data.shape)
+            assert np.array_equal(all_file_data[:,:,check_channels], check_file_data)
+            if i == 100:
+                break
+            # for i in check_channels:
+                # assert np.array_equal(all_file_data[i], check_file_data[i])
+        print("check successfully..")
 
     print('run time is {}'.format(datetime.now()-start_time))
     

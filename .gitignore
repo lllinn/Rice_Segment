@@ -52,3 +52,6 @@ Segment_v2/scripts/generate_experiments_yaml.py
 Segment_v2/config/fusedRGB.yaml
 Segment_v2/config/experiments.yaml
 DatasetProcessing/scripts/ignore_value.py
+Segment_v2/config/experiments.yaml
+Segment_v2/config/fusedRGB.yaml
+Segment_v2/scripts/generate_experiments_yaml.py
