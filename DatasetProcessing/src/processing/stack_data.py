@@ -1,7 +1,8 @@
 import numpy as np
 import os
 from tqdm import tqdm
-
+import shutil
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def stack_npy_files(input_folders, output_folder):
     # 创建输出目录
@@ -55,6 +56,100 @@ def stack_npy_files(input_folders, output_folder):
     print("所有文件处理完成！")
 
 
+
+def process_single_file(input_file_path, output_file_path, sorted_channels_to_extract):
+    """
+    处理单个文件（.npy 或 .png）。这是一个worker函数。
+    """
+    filename = os.path.basename(input_file_path)
+    try:
+        if filename.endswith('.npy'):
+            data = np.load(input_file_path, mmap_mode='c')
+            if sorted_channels_to_extract:
+                # 检查通道索引是否在数据范围内
+                if max(sorted_channels_to_extract) >= data.shape[-1]:
+                     raise IndexError(f"Channel index out of bounds for file {filename}. Data has {data.shape[-1]} channels.")
+                selected_channels = data[:, :, sorted_channels_to_extract]
+                np.save(output_file_path, selected_channels)
+                # print(f"Processed: {filename}") # 可以选择保留此行用于详细日志
+            else:
+                 # 如果没有需要提取的通道，这里根据需求可以选择跳过或复制原文件
+                 # 当前逻辑是跳过并打印警告
+                 # print(f"Warning: No channels to extract for file: {filename} based on provided features.")
+                 pass # 返回 None 表示成功处理，但没有保存新文件
+            return filename, None # 成功处理 .npy 文件
+        elif filename.endswith('.png'):
+            shutil.copy2(input_file_path, output_file_path)
+            # print(f"Copied: {filename}") # 可以选择保留此行用于详细日志
+            return filename, None # 成功处理 .png 文件
+        else:
+             # print(f"Skipped non-.npy/.png file: {filename}")
+            return filename, None # 忽略其他文件类型
+    except Exception as e:
+        return filename, e # 返回文件名和发生的异常
+
+
+def split_npy_files_threaded(input_dir, channel_mapping, output_dir, features_to_process, max_threads=None):
+    """
+    从指定输入目录下的 .npy 文件中提取 features_to_process 中所有特征涉及的通道，
+    并将这些通道合并保存到输出目录的同名文件中，使用多线程处理。
+
+    同时，将输入目录下的 .png 文件复制到输出目录。
+
+    Args:
+        input_dir (str): 包含所有 .npy 和 .png 文件的输入目录路径。
+        channel_mapping (dict): 字典，键为特征名称，值是包含要提取的通道索引的列表。
+        output_dir (str): 保存处理后 .npy 文件和复制的 .png 文件的输出目录路径。
+        features_to_process (list): 包含要处理的特征名称的列表（这些名称必须是 channel_mapping 中的键）。
+        max_threads (int, optional): 最大线程数。如果为 None，则默认为 CPU 核心数的 5 倍。
+                                     对于 I/O 密集型任务，线程数可以多于CPU核心数。
+    """
+    os.makedirs(output_dir, exist_ok=True)
+
+    # 获取所有需要提取的唯一通道索引
+    all_channels_to_extract = set()
+    for feature_name in features_to_process:
+        if feature_name in channel_mapping:
+            all_channels_to_extract.update(channel_mapping[feature_name])
+
+    # 将集合转换为排序后的列表，以保持通道顺序
+    sorted_channels_to_extract = sorted(list(all_channels_to_extract))
+
+    if not sorted_channels_to_extract and any(filename.endswith('.npy') for filename in os.listdir(input_dir)):
+        print("Warning: features_to_process resulted in an empty list of channels to extract for .npy files.")
+        print("Only .png files will be copied.")
+
+
+    files_to_process = [f for f in os.listdir(input_dir) if f.endswith(('.npy', '.png'))]
+
+    # 使用 ThreadPoolExecutor
+    # max_threads=None 会使用一个默认值，通常是 os.cpu_count() * 5 for ThreadPoolExecutor
+    # 您可以根据实际情况调整 max_threads
+    with ThreadPoolExecutor(max_workers=max_threads) as executor:
+        # 提交任务到线程池
+        futures = {}
+        for filename in files_to_process:
+            input_file_path = os.path.join(input_dir, filename)
+            output_file_path = os.path.join(output_dir, filename)
+            # 提交任务，并存储future对象，键为文件名
+            futures[executor.submit(process_single_file, input_file_path, output_file_path, sorted_channels_to_extract)] = filename
+
+        # 使用tqdm跟踪已完成的任务
+        print(f"Starting processing {len(files_to_process)} files with {executor._max_workers} threads...")
+        for future in tqdm(as_completed(futures), total=len(files_to_process), desc="Processing Files", unit="files", ncols=100):
+            filename = futures[future] # 获取对应的文件名
+            try:
+                result_filename, error = future.result() # 获取worker函数返回的结果
+                if error:
+                    print(f"\nError processing {result_filename}: {error}")
+                # else:
+                    # print(f"\nSuccessfully processed {result_filename}") # 可以根据需要打印成功信息
+            except Exception as exc:
+                # 这会捕获submit之前或worker函数执行中发生的更底层的异常
+                print(f'\n{filename} generated an exception: {exc}')
+
+    print("\nFinished processing all files.")
+
 def split_npy_files(input_dir, channel_mapping, output_dir, features_to_process):
     """
     从指定输入目录下的 .npy 文件中提取 features_to_process 中所有特征涉及的通道，
@@ -93,7 +188,10 @@ def split_npy_files(input_dir, channel_mapping, output_dir, features_to_process)
 
             except Exception as e:
                 print(f"Error processing {input_file_path}: {e}")
-
+        elif filename.startswith('.png'):
+            # 复制到指定的路径
+            shutil.copy2(os.path.join(input_dir, filename), os.path.join(output_dir, filename))
+            # continue
     print("Finished processing.")
 
 
